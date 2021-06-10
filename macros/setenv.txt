@@ -1,0 +1,9 @@
+?tacl macro
+
+== Set runtime environment. Customize this for your environment.
+
+#set #param pathmon-name        $NWCSI
+#set #param server-class        CYBERSOURCE-ICS
+#set #param lwc-isv             $vol.subvol
+#set #param base-url            https://ics2wstesta.ic3.com
+

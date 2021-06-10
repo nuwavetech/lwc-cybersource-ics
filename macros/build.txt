@@ -1,0 +1,29 @@
+?tacl routine
+
+== Builds the CSICS program file.
+
+#frame
+
+[#push
+basename
+]
+
+#set basename csics
+
+#output
+#output Compiling the CyberSource ICS sample client ...
+
+ccomp / in [basename]c, out [basename]l / [basename] ; &
+  extensions, runnable, saveabend, symbols, inspect, &
+  allow_cplusplus_comments, &
+  SSV0 "[#defaults/current/]", SSV1 "$system.system"
+
+[#if [ :_completion:completioncode ] <> 0 |then|
+  #output C compile completed with warnings or errors.
+  #return
+]
+
+#output Compile completed with no warnings or errors.
+#output
+
+#unframe

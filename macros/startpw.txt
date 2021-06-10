@@ -1,0 +1,92 @@
+?tacl routine
+#frame
+
+== Start and configure the Pathway
+
+#push client, console, pathmon^name
+
+== Customize these parameters for your system
+
+#set client         [#param lwc-isv].CLIENT == LightWave CLIENT [subvolume.]program
+#set console        $ZHOME
+#set pathmon^name   [#param pathmon-name]
+
+[#if [#EMPTYV pathmon^name] |then|
+  #output Pathmon process name not set.
+  #output Did you run the SETENV macro?
+  #unframe
+  #return
+]
+
+#push RC, class, attribute, tcpip^process
+#setmany RC class attribute tcpip^process, [#defineinfo =tcpip^process^name]
+
+[#if [#EMPTYV tcpip^process] |then|
+  #set tcpip^process $ZTC0
+]
+
+[#if [#processexists [pathmon^name] ] |then|
+  #output Shutting down existing Pathmon [pathmon^name] ...
+  pathcom [pathmon^name] ; shutdown2
+]
+
+==  Start the pathmon and give it a few moments to start
+
+#output Starting pathmon [pathmon^name] ...
+pathmon / name [pathmon^name], in [console], out [console], term [console], nowait /
+
+#delay 500
+
+== Configure the Pathway
+
+#output Configuring pathmon [pathmon^name] ...
+
+pathcom /inline/ [pathmon^name]
+inlprefix +
++ errors 99
++ set pathway maxassigns            50
++ set pathway maxdefines            50
++ set pathway maxexternaltcps       0
++ set pathway maxlinkmons           16
++ set pathway maxparams             20
++ set pathway maxpathcoms           4
++ set pathway maxprograms           10
++ set pathway maxserverclasses      20
++ set pathway maxserverprocesses    40
++ set pathway maxspi                4
++ set pathway maxstartups           4
++ set pathway maxtcps               2
++ set pathway maxtellqueue          0
++ set pathway maxtells              0
++ set pathway maxterms              10
++ set pathway maxtmfrestarts        0
++ set pathway security              "n"
++ start pathway cold !
+
++ reset server
++ set server cpus                   0:1
++ set server createdelay            10 secs
++ set server deletedelay            10 mins
++ set server highpin                on
++ set server linkdepth              4
++ set server maxservers             4
++ set server maxlinks               20
++ set server numstatic              1
++ set server tmf                    off
++ set server debug                  off
++ set server in                     [console]
++ set server out                    [console]
++ set server program                [client]
++ set server param tcpip-process    [tcpip^process]
++ set server param log              +logcfg
++ set server param diag-log         +logcfg
++ set server param monitor          "api log diag-log"
++ set server param api              csicsapi
++ set server param base-url         [#param base-url]
++ set server param http-credentials [#param http-credentials]
++ add server [#param server-class]
++ start server [#param server-class]
+
+inleof
+
+#unframe
