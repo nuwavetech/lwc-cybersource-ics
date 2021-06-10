@@ -1,0 +1,29 @@
+?tacl macro
+#frame
+
+== Creates the DDL dictionary and C / COBOL header files.
+
+[#push
+basename
+]
+
+#set basename csics
+
+#set #inlineprefix +
+
+ddl2 / inline /
+
++ ?dict
++ ?nosave
++ ?dict
+
++ ?c [basename]h !
++ ?cobol [basename]cpy !
++ ?source [basename]ddl( LIGHTWAVE-DEF, API-DEF )
+
++ ?nosave
+
+#inlineeof
+
+#unframe
+

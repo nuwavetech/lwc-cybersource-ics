@@ -1,0 +1,10 @@
+?tacl macro
+
+== Clear params set by SETENV.
+
+clear param pathmon-name
+clear param server-class
+clear param lwc-isv
+clear param base-url
+
+

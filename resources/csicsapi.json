@@ -1,0 +1,709 @@
+{
+  "name": "sample-lwc-cybersource-ics",
+  "description": "CyberSource Internet Commerce Suite (ICS) sample API",
+  "version": 1,
+  "id": "0338e264fe297c1d7d8001010000012ef1",
+  "modificationTime": 1623283182,
+  "isBrief": false,
+  "operations": [
+    {
+      "path": "/commerce/1.x/transactionProcessor/",
+      "methods": [
+        {
+          "api": {
+            "stringPadding": "zeros"
+          },
+          "request": {
+            "mappings": [
+              {
+                "source": {
+                  "type": "ipm"
+                },
+                "target": {
+                  "type": "body",
+                  "value": "requestMessageSoap"
+                }
+              }
+            ],
+            "contentType": "application/xml",
+            "contentTypeIsCustom": false,
+            "acceptTypes": [
+              "*/*"
+            ]
+          },
+          "responses": [
+            {
+              "mappings": [
+                {
+                  "target": {
+                    "type": "ipm",
+                    "data": "16"
+                  },
+                  "source": {
+                    "type": "body",
+                    "value": "replyMessageSoap"
+                  }
+                }
+              ],
+              "httpStatus": "200",
+              "description": "Success"
+            },
+            {
+              "httpStatus": "500",
+              "description": "Fault",
+              "mappings": [
+                {
+                  "target": {
+                    "type": "ipm"
+                  },
+                  "source": {
+                    "type": "body",
+                    "value": "SOAPFault"
+                  }
+                }
+              ]
+            }
+          ],
+          "verb": "POST",
+          "alias": "ICS-Transaction",
+          "id": 1,
+          "description": "Send ICS transaction"
+        }
+      ]
+    }
+  ],
+  "types": {
+    "type": {
+      "requestMessageSoap": {
+        "anonymous": false,
+        "elements": [
+          {
+            "name": "Header",
+            "type": "HeaderType"
+          },
+          {
+            "name": "Body",
+            "type": "BodyType"
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "Envelope",
+          "namespace": "http://schemas.xmlsoap.org/soap/envelope/",
+          "nsPrefix": "soapenv"
+        }
+      },
+      "HeaderType": {
+        "anonymous": true,
+        "elements": [
+          {
+            "name": "Security",
+            "type": "SecurityType",
+            "@XmlElement": {
+              "namespace": "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd",
+              "nsPrefix": "wsse"
+            }
+          },
+          {
+            "name": "mustUnderstand",
+            "type": "string",
+            "size": 32,
+            "@XmlAttribute": {
+              "namespace": "http://schemas.xmlsoap.org/soap/envelope/",
+              "value": "1"
+            }
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "Header",
+          "namespace": "http://schemas.xmlsoap.org/soap/envelope/"
+        }
+      },
+      "SecurityType": {
+        "anonymous": true,
+        "elements": [
+          {
+            "name": "UsernameToken",
+            "type": "UsernameTokenType"
+          },
+          {
+            "name": "mustUnderstand",
+            "type": "string",
+            "size": 32,
+            "@XmlAttribute": {
+              "namespace": "http://schemas.xmlsoap.org/soap/envelope/",
+              "value": "1"
+            }
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "Security",
+          "namespace": "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+        }
+      },
+      "UsernameTokenType": {
+        "anonymous": true,
+        "elements": [
+          {
+            "name": "Username",
+            "type": "string",
+            "size": 32
+          },
+          {
+            "name": "Password",
+            "type": "string",
+            "size": 512
+          },
+          {
+            "name": "Type",
+            "type": "string",
+            "size": 128,
+            "@XmlAttribute": {
+              "value": "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText"
+            }
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "UsernameToken",
+          "namespace": "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+        }
+      },
+      "BodyType": {
+        "anonymous": true,
+        "elements": [
+          {
+            "name": "requestMessage",
+            "type": "requestMessageType",
+            "@XmlElement": {
+              "namespace": "urn:schemas-cybersource-com:transaction-data-1.181"
+            }
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "Body",
+          "namespace": "http://schemas.xmlsoap.org/soap/envelope/"
+        }
+      },
+      "requestMessageType": {
+        "anonymous": true,
+        "elements": [
+          {
+            "name": "merchantID",
+            "type": "string",
+            "size": 32
+          },
+          {
+            "name": "merchantReferenceCode",
+            "type": "string",
+            "size": 32
+          },
+          {
+            "name": "billTo",
+            "type": "billToType"
+          },
+          {
+            "name": "itemCount",
+            "type": "int",
+            "size": 4,
+            "hide": true
+          },
+          {
+            "name": "item",
+            "type": "itemType",
+            "dependsOn": "itemCount",
+            "minOccurs": 0,
+            "maxOccurs": 10
+          },
+          {
+            "name": "purchaseTotals",
+            "type": "purchaseTotalsType"
+          },
+          {
+            "name": "card",
+            "type": "cardType"
+          },
+          {
+            "name": "ccAuthService",
+            "type": "ccAuthServiceType"
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "requestMessage",
+          "namespace": "urn:schemas-cybersource-com:transaction-data-1.181"
+        }
+      },
+      "ccAuthServiceType": {
+        "anonymous": true,
+        "elements": [
+          {
+            "name": "run",
+            "type": "string",
+            "size": 16,
+            "@XmlAttribute": {}
+          }
+        ]
+      },
+      "billToType": {
+        "anonymous": true,
+        "elements": [
+          {
+            "name": "firstName",
+            "type": "string",
+            "size": 32
+          },
+          {
+            "name": "lastName",
+            "type": "string",
+            "size": 32
+          },
+          {
+            "name": "street1",
+            "type": "string",
+            "size": 32
+          },
+          {
+            "name": "city",
+            "type": "string",
+            "size": 32
+          },
+          {
+            "name": "state",
+            "type": "string",
+            "size": 32
+          },
+          {
+            "name": "postalCode",
+            "type": "string",
+            "size": 32
+          },
+          {
+            "name": "country",
+            "type": "string",
+            "size": 32
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "size": 32
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "billTo",
+          "namespace": "urn:schemas-cybersource-com:transaction-data-1.181"
+        }
+      },
+      "itemType": {
+        "anonymous": true,
+        "elements": [
+          {
+            "name": "unitPrice",
+            "type": "string",
+            "size": 32
+          },
+          {
+            "name": "quantity",
+            "type": "int",
+            "size": 4
+          },
+          {
+            "name": "id",
+            "type": "string",
+            "size": 32,
+            "@XmlAttribute": {}
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "item",
+          "namespace": "urn:schemas-cybersource-com:transaction-data-1.181"
+        }
+      },
+      "purchaseTotalsType": {
+        "anonymous": true,
+        "elements": [
+          {
+            "name": "currency",
+            "type": "string",
+            "size": 32
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "purchaseTotals",
+          "namespace": "urn:schemas-cybersource-com:transaction-data-1.181"
+        }
+      },
+      "cardType": {
+        "anonymous": true,
+        "elements": [
+          {
+            "name": "accountNumber",
+            "type": "string",
+            "size": 32
+          },
+          {
+            "name": "expirationMonth",
+            "type": "string",
+            "size": 8
+          },
+          {
+            "name": "expirationYear",
+            "type": "string",
+            "size": 8
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "card",
+          "namespace": "urn:schemas-cybersource-com:transaction-data-1.181"
+        }
+      },
+      "replyMessageSoap": {
+        "anonymous": false,
+        "elements": [
+          {
+            "name": "Header",
+            "type": "HeaderType-01"
+          },
+          {
+            "name": "Body",
+            "type": "BodyType-01"
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "Envelope",
+          "namespace": "http://schemas.xmlsoap.org/soap/envelope/"
+        }
+      },
+      "HeaderType-01": {
+        "anonymous": true,
+        "elements": [
+          {
+            "name": "Security",
+            "type": "SecurityType-01",
+            "@XmlElement": {
+              "namespace": "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+            }
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "Header",
+          "namespace": "http://schemas.xmlsoap.org/soap/envelope/"
+        }
+      },
+      "SecurityType-01": {
+        "anonymous": true,
+        "elements": [
+          {
+            "name": "Timestamp",
+            "type": "TimestampType",
+            "@XmlElement": {
+              "namespace": "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+            }
+          },
+          {
+            "name": "Id",
+            "type": "string",
+            "size": 32,
+            "@XmlAttribute": {
+              "namespace": "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+            }
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "Security",
+          "namespace": "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+        }
+      },
+      "TimestampType": {
+        "anonymous": true,
+        "elements": [
+          {
+            "name": "Created",
+            "type": "timestamp"
+          },
+          {
+            "name": "Id",
+            "type": "string",
+            "size": 32,
+            "@XmlAttribute": {
+              "namespace": "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+            }
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "Timestamp",
+          "namespace": "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+        }
+      },
+      "BodyType-01": {
+        "anonymous": true,
+        "elements": [
+          {
+            "name": "replyMessage",
+            "type": "replyMessageType",
+            "@XmlElement": {
+              "namespace": "urn:schemas-cybersource-com:transaction-data-1.181"
+            }
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "Body",
+          "namespace": "http://schemas.xmlsoap.org/soap/envelope/"
+        }
+      },
+      "replyMessageType": {
+        "anonymous": true,
+        "elements": [
+          {
+            "name": "merchantReferenceCode",
+            "type": "string",
+            "size": 32
+          },
+          {
+            "name": "requestID",
+            "type": "string",
+            "size": 64
+          },
+          {
+            "name": "decision",
+            "type": "string",
+            "size": 32
+          },
+          {
+            "name": "reasonCode",
+            "type": "int",
+            "size": 4
+          },
+          {
+            "name": "invalidField",
+            "type": "string",
+            "size": 32
+          },
+          {
+            "name": "requestToken",
+            "type": "string",
+            "size": 80
+          },
+          {
+            "name": "ccAuthReply",
+            "type": "ccAuthReplyType"
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "replyMessage",
+          "namespace": "urn:schemas-cybersource-com:transaction-data-1.181"
+        }
+      },
+      "ccAuthReplyType": {
+        "anonymous": true,
+        "elements": [
+          {
+            "name": "reasonCode",
+            "type": "int",
+            "size": 4
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "ccAuthReply",
+          "namespace": "urn:schemas-cybersource-com:transaction-data-1.181"
+        }
+      },
+      "SOAPFault": {
+        "anonymous": false,
+        "elements": [
+          {
+            "name": "Body",
+            "type": "BodyType-02"
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "Envelope",
+          "namespace": "http://schemas.xmlsoap.org/soap/envelope/"
+        }
+      },
+      "BodyType-02": {
+        "anonymous": true,
+        "elements": [
+          {
+            "name": "Fault",
+            "type": "FaultType"
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "Body",
+          "namespace": "http://schemas.xmlsoap.org/soap/envelope/"
+        }
+      },
+      "FaultType": {
+        "anonymous": true,
+        "elements": [
+          {
+            "name": "faultcode",
+            "type": "string",
+            "size": 32,
+            "@XmlElement": {
+              "namespace": ""
+            }
+          },
+          {
+            "name": "faultstring",
+            "type": "string",
+            "size": 32,
+            "@XmlElement": {
+              "namespace": ""
+            }
+          },
+          {
+            "name": "detail",
+            "type": "string",
+            "size": 32,
+            "@XmlElement": {
+              "namespace": ""
+            }
+          }
+        ],
+        "@XmlRootElement": {
+          "name": "Fault",
+          "namespace": "http://schemas.xmlsoap.org/soap/envelope/"
+        }
+      }
+    }
+  },
+  "generatedTypes": {
+    "WARNING": "These types are generated by LightWave Client and should not be manually edited.",
+    "type": {
+      "LightWaveRqHeader": {
+        "generated": true,
+        "lightwave": true,
+        "elements": [
+          {
+            "name": "rqCode",
+            "type": "short",
+            "size": 2
+          },
+          {
+            "name": "rqVersion",
+            "type": "unsignedShort",
+            "size": 2
+          },
+          {
+            "name": "rqTimeout",
+            "type": "unsignedInt",
+            "size": 4
+          },
+          {
+            "name": "reserved",
+            "type": "string",
+            "size": 24
+          }
+        ]
+      },
+      "LightWaveRpHeader": {
+        "generated": true,
+        "lightwave": true,
+        "elements": [
+          {
+            "name": "rpCode",
+            "type": "short",
+            "size": 2
+          },
+          {
+            "name": "httpStatus",
+            "type": "short",
+            "size": 2
+          },
+          {
+            "name": "infoCode",
+            "type": "short",
+            "size": 2
+          },
+          {
+            "name": "infoDetail",
+            "type": "short",
+            "size": 2
+          },
+          {
+            "name": "reserved",
+            "type": "string",
+            "size": 24
+          }
+        ]
+      },
+      "LightWaveErrorRp": {
+        "generated": true,
+        "lightwave": true,
+        "elements": [
+          {
+            "name": "LightWaveRpHeader",
+            "type": "LightWaveRpHeader"
+          },
+          {
+            "name": "errorSource",
+            "type": "int",
+            "size": 4
+          },
+          {
+            "name": "errorCode",
+            "type": "int",
+            "size": 4
+          },
+          {
+            "name": "errorSubcode",
+            "type": "int",
+            "size": 4
+          },
+          {
+            "name": "errorMessage",
+            "type": "string",
+            "size": 4096
+          }
+        ]
+      },
+      "SampleRequestRq": {
+        "generated": true,
+        "lightwave": false,
+        "isRequest": true,
+        "alias": "SampleRequest",
+        "description": "A sample Cybersource SOAP request",
+        "operation": "POST /commerce/1.x/transactionProcessor/",
+        "elements": [
+          {
+            "name": "LightWaveRqHeader",
+            "type": "LightWaveRqHeader"
+          },
+          {
+            "name": "requestMessageSoap",
+            "type": "requestMessageSoap"
+          }
+        ]
+      },
+      "SampleRequest200Rp": {
+        "generated": true,
+        "lightwave": false,
+        "isReply": true,
+        "elements": [
+          {
+            "name": "LightWaveRpHeader",
+            "type": "LightWaveRpHeader"
+          },
+          {
+            "name": "replyMessageSoap",
+            "type": "replyMessageSoap"
+          }
+        ]
+      },
+      "SampleRequest500Rp": {
+        "generated": true,
+        "lightwave": false,
+        "isReply": true,
+        "elements": [
+          {
+            "name": "LightWaveRpHeader",
+            "type": "LightWaveRpHeader"
+          },
+          {
+            "name": "SOAPFault",
+            "type": "SOAPFault"
+          }
+        ]
+      }
+    }
+  }
+}
